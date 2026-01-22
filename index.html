@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الطالب الذكية - وزارة التربية والتعليم</title>
+    
+    <!-- CSS Styles -->
+    <style>
+        /* استيراد خط عربي جميل */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        /* تصميم عام للصفحة */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* الحاوية الرئيسية لكل الصفحات */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* إخفاء الصفحات غير النشطة */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        h2 {
+            color: #005a9c; /* لون رسمي */
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        /* تصميم حقول الإدخال */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* تصميم الأزرار */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        /* تصميم صفحة عرض الدرجة */
+        #grade-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 20px 0;
+        }
+
+        /* تصميم جدول بيانات المدير */
+        .admin-container {
+            max-width: 900px; /* زيادة العرض قليلاً لعمود الحذف */
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .no-data {
+            color: #888;
+            font-style: italic;
+        }
+
+        /* تصميم زر الحذف */
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- صفحة تسجيل الدخول -->
+    <div id="loginPage" class="container page active">
+        <h1>بوابة الطالب</h1>
+        <h2>وزارة التربية والتعليم</h2>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="studentId">رقم الهوية (9 أرقام)</label>
+                <input type="text" id="studentId" placeholder="مثال: 123456789" maxlength="9" pattern="\d{9}" required>
+            </div>
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="مثال: nnbXGU3?" required>
+            </div>
+            <button type="submit" class="btn">تسجيل الدخول</button>
+        </form>
+    </div>
+
+    <!-- صفحة عرض درجة الطالب -->
+    <div id="gradePage" class="container page">
+        <h2>أهلاً بك!</h2>
+        <p>درجتك النهائية هي:</p>
+        <div id="grade-display">--</div>
+        <p>تم حفظ بياناتك بنجاح.</p>
+        <button id="logoutBtn" class="btn btn-logout">تسجيل خروج</button>
+    </div>
+
+    <!-- صفحة المدير لعرض البيانات -->
+    <div id="adminPage" class="container admin-container page">
+        <h2>لوحة التحكم - بيانات الطلاب</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الهوية</th>
+                    <th>كلمة المرور</th>
+                    <th>الدرجة</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="studentDataTable">
+                <!-- سيتم إضافة البيانات هنا بواسطة الجافاسكريبت -->
+            </tbody>
+        </table>
+        <button id="adminLogoutBtn" class="btn btn-logout">تسجيل خروج</button>
+    </div>
+
+
+    <!-- JavaScript Code -->
+    <script>
+        // --- إعدادات ---
+        const ADMIN_ID = '123456789';
+        const ADMIN_PASS = 'Admin123!';
+        const STORAGE_KEY = 'studentGradesData';
+
+        // --- عناصر الصفحة ---
+        const loginPage = document.getElementById('loginPage');
+        const gradePage = document.getElementById('gradePage');
+        const adminPage = document.getElementById('adminPage');
+        const loginForm = document.getElementById('loginForm');
+        const studentIdInput = document.getElementById('studentId');
+        const passwordInput = document.getElementById('password');
+        const gradeDisplay = document.getElementById('grade-display');
+        const studentDataTable = document.getElementById('studentDataTable');
+
+        // --- دوال التنقل بين الصفحات ---
+        function showPage(pageToShow) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            pageToShow.classList.add('active');
+        }
+
+        function showLoginPage() {
+            showPage(loginPage);
+            loginForm.reset();
+        }
+
+        function showGradePage(grade) {
+            gradeDisplay.textContent = grade;
+            showPage(gradePage);
+        }
+
+        function showAdminPage() {
+            populateAdminTable();
+            showPage(adminPage);
+        }
+
+        // --- دوال التعامل مع البيانات ---
+        function saveStudentData(id, pass, grade) {
+            let students = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            if (!students.find(s => s.id === id)) {
+                students.push({ id: id, password: pass, grade: grade });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+            }
+        }
+
+        // دالة حذف طالب
+        function deleteStudent(studentId) {
+            let students = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            // إنشاء مصفوفة جديدة بدون الطالب المحدد
+            const updatedStudents = students.filter(s => s.id !== studentId);
+            // حفظ المصفوفة المحدثة
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedStudents));
+            // إعادة تحميل الجدول لعرض التغييرات
+            populateAdminTable();
+        }
+
+        function populateAdminTable() {
+            const students = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            studentDataTable.innerHTML = ''; // مسح الجدول القديم
+
+            if (students.length === 0) {
+                // تحديث colspan ليتوافق مع عدد الأعمدة الجديد (4)
+                studentDataTable.innerHTML = '<tr><td colspan="4" class="no-data">لا توجد بيانات طلاب بعد.</td></tr>';
+                return;
+            }
+
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.password}</td>
+                    <td>${student.grade}</td>
+                    <td><button class="btn-delete" data-id="${student.id}">حذف</button></td>
+                `;
+                studentDataTable.appendChild(row);
+            });
+        }
+
+        // --- معالج حدث تسجيل الدخول ---
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const id = studentIdInput.value;
+            const pass = passwordInput.value;
+
+            if (id === ADMIN_ID && pass === ADMIN_PASS) {
+                showAdminPage();
+                return;
+            }
+
+            const isIdValid = /^\d{9}$/.test(id);
+            const isPassValid = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/.test(pass);
+
+            if (!isIdValid) {
+                alert('خطأ: رقم الهوية يجب أن يتكون من 9 أرقام بالضبط.');
+                return;
+            }
+
+            if (!isPassValid) {
+                alert('خطأ: كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل، وتشمل رقم، حرف كبير، حرف صغير، ورمز خاص (!@#$%).');
+                return;
+            }
+
+            const randomGrade = Math.floor(Math.random() * 6) + 15;
+            saveStudentData(id, pass, randomGrade);
+            showGradePage(randomGrade);
+        });
+
+        // --- أحداث أزرار تسجيل الخروج ---
+        document.getElementById('logoutBtn').addEventListener('click', showLoginPage);
+        document.getElementById('adminLogoutBtn').addEventListener('click', showLoginPage);
+
+        // --- حدث النقر على زر الحذف (باستخدام Event Delegation) ---
+        studentDataTable.addEventListener('click', function(event) {
+            // التأكد من أن العنصر الذي تم النقر عليه هو زر الحذف
+            if (event.target.classList.contains('btn-delete')) {
+                const studentIdToDelete = event.target.dataset.id;
+                if (confirm(`هل أنت متأكد من حذف بيانات الطالب صاحب الرقم: ${studentIdToDelete}؟`)) {
+                    deleteStudent(studentIdToDelete);
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
